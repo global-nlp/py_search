@@ -11,12 +11,14 @@ from handle.search import Search
 
 if __name__ == '__main__':
     search = Search()
-    data_id = search.add("喜羊羊与灰太狼", "口令正确")
-    print(data_id)
-    print(search.search())
+    # data_id = search.add("喜羊羊与灰太狼9", "口令正确")
+    # print(data_id)
+    print(search.search(2))
+    # print(search.search_by_id(4691561912347918337))
     print(search.search_index())
-    # all_data = search.search()
-    # print(all_data)
-    # for data in all_data:
-    #     print(all_data[data])
+    # print(search.search_by_key("灰太"))
+    search.delete(4691909491526991873)
+    print("删除后")
+    print(search.search(2))
+    print(search.search_index())
 

@@ -28,14 +28,31 @@ class Index(object):
             self.insert_word(word, data_id, data_file_path, False)
 
     def insert_word(self, word, data_id, data_file_path, is_query=False):
-        try:
-            doc_list = self._index_dict[word]
-            for doc in doc_list:
+        if word in self._index_dict:
+            for doc in self._index_dict[word]:
                 if data_id == doc[0]:
                     return
             self._index_dict[word].append((data_id, data_file_path, is_query))
-        except Exception as e:
+        else:
+            # TODO 遍历其它索引文件
             self._index_dict[word] = [(data_id, data_file_path, is_query)]
+
+    def delete(self, words, data_id):
+        for word in words:
+            self.delete_word(word, data_id)
+
+    def delete_word(self, word, data_id):
+        if word in self.index_dict:
+            doc_index_list = self.index_dict[word]
+            if len(doc_index_list) == 1:
+                self.index_dict.pop(word)
+                return
+            for doc_index in doc_index_list:
+                if doc_index[0] == data_id:
+                    doc_index_list.remove(doc_index)
+        else:
+            # TODO 遍历其它索引文件
+            pass
 
     @property
     def index_dict(self):

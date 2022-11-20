@@ -10,31 +10,33 @@ from analyze import analyzer
 from dump import dump
 from handle.data import Data
 import snowflake.client as snow
+from utils.constant import NOT_EXIST, SUCCESS
 import os
-
-# TODO 什么时候需要使用类，方法被调用之前需要先初始化一些变量的时候？
+import socket
 from handle.index import Index
 
 
 class Search(object):
 
     _data_id_map = {}
+    #  更换路径 TODO
     _data_id_map_file = "../py_search_map/1.map"
 
     def __init__(self):
+        """
+            初始化数据字典和索引字典
+        """
         self.data = Data()
         self.index = Index()
         data_id_map = dump.load_data("../py_search_map/")
         if data_id_map is not None:
             self._data_id_map = data_id_map
-        try:
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        result = sock.connect_ex(('127.0.0.1', 8910))
+        if result == 0:
+            print("snowflake_start_server is open")
+        else:
             os.system("snowflake_start_server")
-        except Exception as e:
-            print(e.__cause__)
-        """
-            初始化数据字典和索引字典
-        """
-        # TODO
 
     def add(self, query, answer):
         """
@@ -58,29 +60,86 @@ class Search(object):
         self.index.insert(words, data_id, self.data.file_path)
         self.index.insert_word(query, data_id, self.data.file_path, True)
 
-        # 持久化
-        dump.data_dump(self.data.data_dict, data_file_path)
-        dump.data_dump(self.index.index_dict, self.index.index_file_path)
-        dump.data_dump(self._data_id_map, self._data_id_map_file)
+        self.dump_all()
 
         return data_id
 
-    def modify(self):
-        # TODO
-        pass
-
-    def delete(self):
-        # TODO
-        pass
-
-    def search(self):
+    def dump_all(self):
         """
-            查询所有记录
+            将数据字典、索引字典、映射字典持久化
         Returns:
 
         """
+        dump.data_dump(self.data.data_dict, self.data.file_path)
+        dump.data_dump(self.index.index_dict, self.index.index_file_path)
+        dump.data_dump(self._data_id_map, self._data_id_map_file)
 
-        return self.data.data_dict
+    def search(self, limit=None):
+        """
+            查询所有记录（默认返回最新插入的10条）
+        Returns:
+
+        """
+        if limit is None:
+            limit = 10
+        result = []
+        data_keys = list(self.data.data_dict.keys())
+        dict_end = len(data_keys) - 1
+        for i in range(dict_end, dict_end - limit, -1):
+            if i < 0:
+                break
+            data_id = data_keys[i]
+            result.append({data_id: self.data.data_dict[data_id]})
+        return result
 
     def search_index(self):
         return self.index.index_dict
+
+    def search_by_id(self, data_id):
+        if data_id in self._data_id_map:
+            data_file_path = self._data_id_map[data_id]
+            if data_file_path == self.data.file_path:
+                return {data_id: self.data.data_dict[data_id]}
+        else:
+            # TODO 遍历其它映射文件
+            pass
+
+    def search_by_key(self, key):
+        doc_list = []
+        if key in self.index.index_dict:
+            index_list = self.index.index_dict[key]
+        else:
+            # TODO 遍历其它索引文件
+            return
+        for index in index_list:
+            doc_list.append({index[0]: self.data.data_dict[index[0]]})
+        return doc_list
+
+    def search_by_key_like(self, key):
+        """
+            模糊查询 TODO
+        Args:
+            key:
+
+        Returns:
+
+        """
+        pass
+
+    def delete(self, data_id):
+        if data_id not in self.data.data_dict:
+            # TODO 根据map获取data_id所在的文件，读取文件，再判断是否存在。
+            return NOT_EXIST
+        data = self.data.data_dict[data_id]
+        self.data.data_dict.pop(data_id)
+        query = data['query']
+        words = analyzer.seg(query)
+        self.index.delete(words, data_id)
+        self._data_id_map.pop(data_id)
+        self.dump_all()
+
+    def modify(self, data_id, answer):
+        if data_id not in self.data.data_dict:
+            # TODO 根据map获取data_id所在的文件，读取文件，再判断是否存在。
+            return NOT_EXIST
+        pass
