@@ -4,6 +4,5 @@
 # Author: Feng Qing Liu
 # Mail: liu_f_q@163.com
 # Created Time: 2022/11/14 13:17
-# Description: 
+# Description: 提供RESTFUL风格接口，待开发
 # -----------------------------------------------------------------------#
-

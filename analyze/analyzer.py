@@ -4,7 +4,7 @@
 # Author: Feng Qing Liu
 # Mail: liu_f_q@163.com
 # Created Time: 2022/11/14 13:12
-# Description: 用于封装分词相关函数
+# Description: 分词相关函数
 # -----------------------------------------------------------------------#
 
 from knlp import Knlp
@@ -12,21 +12,17 @@ from knlp import Knlp
 
 def seg(text):
     """
-        Knlp 默认模式分词结果
+        调用Knlp默认分词模式进行分词
     Args:
         text: 待分词文本
 
-    Returns: list
-
-    # TODO 如果需要指定不同的分词模式是不是需要引入Segmentor类
-
+    Returns: 分词结果 list
     """
+
     knlp = Knlp(text)
     return knlp.seg_result
 
 
 if __name__ == "__main__":
-    data = {'喜': 1}
     words = seg("喜羊羊与灰太狼")
-    for word in words:
-        print(data[words[0]])
+    print(words)

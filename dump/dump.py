@@ -25,36 +25,18 @@ def data_dump(data_dict, path):
     data_file.close()
 
 
-def load_data(path=None):
+def load_data(path):
     """
-        加载数据文件
+        加载指定文件
     Args:
-        path: 指定数据文件路径。path为None时，加载最新的文件
+        path: 指定文件路径
 
-    Returns: 数据字典
-
-    """
-    # 获取当前路径下所有文件，遍历 获取最新的文件
-    file_list = os.listdir(path)
-    file_name = max(file_list, key=lambda file: os.path.getmtime(path + file))
-    if "__init__.py".__eq__(file_name):
-        return None
-    else:
-        data_file_path = path + file_name
-        data_file = open(data_file_path, "rb")
-        data = pickle.load(data_file)
-        data_file.close()
-        return data
-
-
-def load_index(path=None):
-    """
-        加载倒排索引字典
-    Args:
-        path: 指定索引文件路径。path为None时，加载最新的文件
-
-    Returns:
+    Returns: 字典
 
     """
-    # TODO
-    pass
+    if not os.path.exists(path):
+        return {}
+    data_file = open(path, "rb")
+    data = pickle.load(data_file)
+    data_file.close()
+    return data
