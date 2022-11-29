@@ -1,0 +1,11 @@
+.idea/
+.pyc
+__pycache__/
+*.egg-info/
+build/
+.pytest_cache/
+dist/
+dev_log/
+.DS_Store
+python-search.iml
+data/*.cache
