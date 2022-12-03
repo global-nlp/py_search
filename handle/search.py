@@ -31,6 +31,17 @@ class Search(object):
         if data_id_map:
             self._data_id_map = data_id_map
 
+    def head(self, data_id):
+        """
+            查询根据id查询数据是否存在
+        Args:
+            data_id: data_id
+
+        Returns:
+
+        """
+        return self.search_by_id(data_id)
+
     def add(self, query, answer):
         """
             问答对新增保存
@@ -45,8 +56,21 @@ class Search(object):
         thread.start()
         # 数据插入
         data_id = snow.get_guid()
+        return self.add_with_data_id(data_id, query, answer)
+
+    def add_with_data_id(self, data_id, query, answer):
+        """
+            问答对新增保存
+        Args:
+            data_id: 添加时指定id
+            query: 问题 (目前仅对问题分词)
+            answer: 答案
+
+        Returns: 新增数据的id
+
+        """
         record = {'query': query, 'answer': answer}
-        self.data.insert(data_id, record)
+        self.data.insert(str(data_id), record)
 
         # 数据id关联数据所在文件
         self._data_id_map[data_id] = self.data.file_path.replace(".cache", "")
@@ -148,7 +172,7 @@ class Search(object):
             index_list = self.index.index_dict[key]
         else:
             index_list = self.index.get_doc_list_by_word(key)
-        if len(doc_list) == 0:
+        if len(index_list) == 0:
             # 所有索引文件中都没有
             return NOT_EXIST
         for index in index_list:
