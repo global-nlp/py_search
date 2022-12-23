@@ -11,7 +11,7 @@ from handle.search import Search
 
 def test_add():
     search = Search()
-    data_id = search.add("喜羊羊与灰太狼", "口令正确")
+    data_id = search.add(data_id='123', query="喜羊羊与灰太狼", answer="口令正确")
     print("data_id is ", data_id)
     print(search.search())
 
@@ -28,10 +28,14 @@ def test_index():
     print(search.search_index())
 
 
-def test_search_by_id():
+def test_search_by_id(data_id):
     search = Search()
-    data_id = search.add("据说拿破仑阅读了七遍，歌德的第一部小说叫?", "《少年维特之烦恼》")
     print(search.search_by_id(data_id))
+
+
+def test_search_by_key(key):
+    search = Search()
+    print(search.search_by_key(key))
 
 
 def test_delete():
@@ -68,7 +72,8 @@ if __name__ == '__main__':
     test_add()
     test_dump()
     test_index()
-    test_search_by_id()
+    test_search_by_id('123')
+    test_search_by_key('相信')
     test_delete()
     test_update_query()
     test_update_data_id()

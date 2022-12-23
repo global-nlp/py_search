@@ -8,4 +8,6 @@ dist/
 dev_log/
 .DS_Store
 python-search.iml
-data/*.cache
+data/py_search_data/*
+data/py_search_index/*
+data/py_search_map/*

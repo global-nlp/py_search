@@ -11,4 +11,5 @@ import os
 
 SUCCESS = "0"
 NOT_EXIST = "001"
+EXIST = "002"
 PY_SEARCH_PATH = os.path.dirname(os.path.realpath(__file__)) + "/../"
